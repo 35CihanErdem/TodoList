@@ -20,10 +20,13 @@ export class AppComponent {
   isDisplay = false;
 
   constructor() {
-    // Yerel depolamadan verileri yükle
-    const savedItems = localStorage.getItem('todoItems');
-    if (savedItems) {
-      this.model.items = JSON.parse(savedItems);
+    // Tarayıcı ortamında olup olmadığını kontrol et
+    if (this.isBrowser()) {
+      // Yerel depolamadan verileri yükle
+      const savedItems = localStorage.getItem('todoItems');
+      if (savedItems) {
+        this.model.items = JSON.parse(savedItems);
+      }
     }
   }
 
@@ -38,13 +41,21 @@ export class AppComponent {
   additem(value: any) {
     if (value != "") {
       this.model.items.push(new TodoItems(value, false));
-      // Yerel depolamaya kaydet
-      this.saveItems();
+      // Tarayıcı ortamında olup olmadığını kontrol et
+      if (this.isBrowser()) {
+        // Yerel depolamaya kaydet
+        this.saveItems();
+      }
     }
   }
 
   // Yerel depolamaya kaydetme fonksiyonu
   saveItems() {
     localStorage.setItem('todoItems', JSON.stringify(this.model.items));
+  }
+
+  // Tarayıcı ortamını kontrol eden fonksiyon
+  isBrowser(): boolean {
+    return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
   }
 }
