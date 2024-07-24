@@ -1,13 +1,8 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
-import {FormsModule} from '@angular/forms';
+import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Model, TodoItems } from './model';
-import { Action } from 'rxjs/internal/scheduler/Action';
-interface Item {
-  description: string;
-  action: string;
-}
 
 @Component({
   selector: 'app-root',
@@ -18,32 +13,38 @@ interface Item {
     CommonModule
   ],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.css'
+  styleUrls: ['./app.component.css']
 })
-
 export class AppComponent {
-model=new Model();
-isDisplay=false;
+  model = new Model();
+  isDisplay = false;
 
-getitems(){
-  
-  if (this.isDisplay){
-    return this.model.items;
+  constructor() {
+    // Yerel depolamadan verileri yükle
+    const savedItems = localStorage.getItem('todoItems');
+    if (savedItems) {
+      this.model.items = JSON.parse(savedItems);
+    }
   }
-  else{
-    return this.model.items.filter(item=> !item.action);
+
+  getitems() {
+    if (this.isDisplay) {
+      return this.model.items;
+    } else {
+      return this.model.items.filter(item => !item.action);
+    }
+  }
+
+  additem(value: any) {
+    if (value != "") {
+      this.model.items.push(new TodoItems(value, false));
+      // Yerel depolamaya kaydet
+      this.saveItems();
+    }
+  }
+
+  // Yerel depolamaya kaydetme fonksiyonu
+  saveItems() {
+    localStorage.setItem('todoItems', JSON.stringify(this.model.items));
   }
 }
-
-additem(value:any){
-if (value!=""){
-  this.model.items.push( new TodoItems(value,false));
-}
-
-}
-
-
-}
-
-
-
